@@ -17,7 +17,7 @@ var bodyParser      = require('body-parser');
 const cookieParser  = require("cookie-parser");
 
 const pinataSDK     = require('@pinata/sdk');
-const pinata        = pinataSDK('2dc5098d55b4cc8d89dc', '1d9376a8ba92e82288fdfb7e6d0e8b749e2057315e1947c5c99045d987d85e31');
+const pinata        = pinataSDK('YOURIDS', 'YOURIDS');
 
 pinata.testAuthentication().then((result) => {
     //handle successful authentication here
