@@ -11,3 +11,4 @@ Some system of Ladder will come up At some point depending on in game mechanics.
 The architecture is complete for the first most important feature so I can now upload to git and begin the real
 versionning of the webSite!
 
+-I use Ganache from the Truffle Suite to create my SideChain
