@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <%- include('./parts/header'); -%>
+    <body class="container">
+        <%- include('./parts/nav'); -%>
+        <div class="row">
+            <div class="col ">
+                <table class="table">
+                        <tr> <td><label>Spell Name</label></td> <td><input type="text"   id="SpellName" placeholder="Name of Your Spell" />   </td></tr>   
+                        <tr> <td><label>Cooldown</label></td>   <td><input type="number"   id="Cooldown" placeholder="number" />     </td></tr>   
+                        <tr> 
+                            <td><label>Damage Type</label></td>    
+                            <td>
+                                <select name="Damage Type" id="damageType">
+                                    <option value="">--Please choose an option--</option>
+                                    <option value="Ability Power">Ability Power</option>
+                                    <option value="Attack Damge">Attack Damge</option>
+                                </select>
+                            </td>
+                        </tr>   
+
+                        <tr> 
+                            <td>
+                                <label>Missile Type</label></td>   
+                                <td>
+                                    <select name="Missile Type" id="MissileType">
+                                        <option value="">--Please choose an option--</option>
+                                        <option value="Projectile">Projectile</option>
+                                        <option value="OnTarget">On Target</option>
+                                    </select>
+                                </td>
+                        </tr>  
+                        <tr> <td><label>Damage</label></td>         <td><input type="number"  id="damage"  placeholder="number"/>      </td></tr>   
+                        <tr> <td><input type="file"  id="image"  placeholder="image" </td></tr>
+                        <tr> <td><button class="btn btn-primary" onclick="createNFT()">SpellCraft Votre NFT</button>    </td></tr>   
+                </table>
+            </div>
+            <!---------------------------New NFT Spell Crafted------------------------------------>
+            <!---------------------------New NFT Spell Crafted------------------------------------>
+            <!---------------------------New NFT Spell Crafted------------------------------------>
+            <!---------------------------New NFT Spell Crafted------------------------------------>
+            <div class="col ">
+                <div  class="row justify-content-center " >
+                    <center>
+                        <h2>New NFT Spell Crafted</h2>
+                        <h3>From Pinata</h3>
+                        <hr>
+                    </center>
+                </div>
+                <div  class="row" >
+                    <div  class="col" >
+                        <img class="rounded float-left img-thumbnail" width="300" height="300" id="imageSpell"/>
+                    </div>
+                    <div  class="col" >
+                        <table class="table">
+                            <tr> <td>Spell Name	:   </td><td id="SpellNameFetch"    ></td> </tr>
+                            <tr> <td>Cooldown   :   </td><td id="CooldownFetch"     ></td> </tr>
+                            <tr> <td>Damage Type:	</td><td id="damageTypeFetch"   ></td> </tr>
+                            <tr> <td>Missile Type:	</td><td id="MissileTypeFetch"  ></td> </tr>
+                            <tr> <td>Damage :       </td><td id="damageFetch"       ></td> </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="Row">
+            <center>
+                <h1><a href="/Grimoire" >My Grimoire</a></h1>
+                <div class="Row">
+                </div>    
+            </center>
+        </div>
+
+        <script>
+            let accounts = [];
+            var socket = io();
+            ethEnabled();
+            function createNFT(){
+                console.log("IN Create NFT");
+                
+                var Spell = { 
+                                "SpellName"     : document.getElementById('SpellName').value,
+                                "Cooldown"      : document.getElementById('Cooldown').value,
+                                "damageType"    : document.getElementById('damageType').value,
+                                "MissileType"   : document.getElementById('MissileType').value,
+                                "damage"        : document.getElementById('damage').value,
+                                "file"          : document.getElementById('image').files[0]
+                            }
+                if (Spell.file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) { 
+                        console.log("readyState 2: " +reader.readyState)
+                        const metadata = `name: ${Spell.file.name}, type: ${Spell.file.type}, size: ${Spell.file.size}, contents:`;
+                        const contents = evt.target.result;
+                        console.log("HERE " + contents);
+                        Spell.file=contents
+                        console.log("Spell.file " +  Spell.file );   
+
+
+                        socket.emit('createNFT', accounts[0], Spell );
+                        /*TEST REMPLISSAGE NEW SPELL
+                        document.querySelector( "#SpellNameFetch" ).innerHTML   = Spell.SpellName
+                        document.querySelector( "#CooldownFetch" ).innerHTML    = Spell.Cooldown
+                        document.querySelector( "#damageTypeFetch" ).innerHTML  = Spell.damageType
+                        document.querySelector( "#MissileTypeFetch" ).innerHTML = Spell.MissileType
+                        document.querySelector( "#damageFetch" ).innerHTML      = Spell.damage
+                        document.querySelector( "#imageSpell" ).src             = Spell.file*/
+                    };
+                    console.log("readyState 1: " +reader.readyState)
+                    reader.readAsDataURL(Spell.file);
+                }
+                
+            }
+            socket.on('CraftedSpell',function(SpellURL){
+                console.log("IN CraftedSpell")
+                fetch(SpellURL)
+                    .then(response => response.json())
+                    .then(Spell =>{ 
+                        document.querySelector( "#SpellNameFetch" ).innerHTML   = Spell.SpellName
+                        document.querySelector( "#CooldownFetch" ).innerHTML    = Spell.Cooldown
+                        document.querySelector( "#damageTypeFetch" ).innerHTML  = Spell.damageType
+                        document.querySelector( "#MissileTypeFetch" ).innerHTML = Spell.MissileType
+                        document.querySelector( "#damageFetch" ).innerHTML      = Spell.damage
+                        document.querySelector( "#imageSpell" ).src             = Spell.file
+                    });
+            });
+            async function ethEnabled(){
+                if(!(typeof window.ethereum !== 'undefined')){
+                    alert("Please install MetaMask to use this dApp!");
+                }else{
+                    accounts =  await ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    console.log('ethEnabled :' + accounts[0])
+                }
+            }
+            function Grimoire(){
+                console.log('IN Grimoire');
+            }
+            console.log(window);
+        </script>
+<%- include('./parts/footer'); -%>

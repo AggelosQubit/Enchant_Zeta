@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <%- include('./parts/header'); -%>
+    <body class="container">
+        <div class="Row">
+            <center><h1>Enchant Zeta SpellCraft </h1></center>
+            <center><h2>Users NFT Vanilla</h2></center>
+            <center>
+                <table class="table" style="border : solid Black 3px">
+                    <tr>
+                        <td style="border : solid purple 3px"><a href="/"> Home Tests </a></td>
+                        <td style="border : solid purple 3px"><a href="/NFT"> NFT Tests </a> </td>
+                        <td style="border : solid purple 3px"><a href="/Token"> Token Tests </a></td> 
+                    </tr>
+                </table>
+            </center>
+        </div>
+
+
+
+        <div style="border :solid red 3px">
+            <h2> Connect The Wallet To The App </h2>
+            <p>
+                <h2  > Account Address </h2><h2 id="accountAdd"  > </h2>
+            </p>
+            <p>
+                <h2  > Account Current Amout </h2><h2 id="accountAmount"> </h2>
+            </p>
+            <button onclick="ethEnabled()" >Connect To Wallet</button>
+        </div>
+        
+        <hr>
+
+        <div style="border :solid blue 3px">
+            <h2></h2>
+            <button onclick="sendEth()" >Send Ethereum</button>
+        </div>
+        <hr>
+        <div style="border :solid yellow 3px">     
+            <h2></h2>   
+            <div>
+                <p>Smart Contract Test Get Greetings function Value : :</p>
+                <p id="valueGreetings" ></p>
+                <button onclick="getGreetings()" >Get Greeting</button>
+            </div>
+
+            <div>
+                <textarea id="newGreetingValue" > </textarea>
+                <button onclick="setGreetings()" >Set New Greeting</button>
+            </div>
+        </div>
+
+        <script>
+            let accounts = [];
+            var socket = io();
+            function getGreetings(){
+                socket.emit('getGreeting');
+                socket.on('Greeting',function(valueGreetings){
+                    document.getElementById('valueGreetings').innerHTML = valueGreetings;
+                    console.log(valueGreetings);
+                });
+                
+            }
+            function setGreetings(){
+                //contract.methods.setGreeting(newGreeting).send({from : fromAdr});
+                socket.emit('setNewGreeting', accounts[0],  document.getElementById('newGreetingValue').value);
+            }
+            async function sendEth () {
+                ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [
+                        {
+                            from: accounts[0],
+                            to: '0x65fbC431a4dfcbDfDAB77Cdd2023Ea37cC82133B',
+                            value: '0x29a2241af62c000010',
+                            gasPrice: '0x09184e72a000',
+                            gas: '0x5208',
+                        },
+                    ],
+                })  .then((txHash) => console.log(txHash))
+                    .catch((error) => console.error);
+            }
+
+            async function ethEnabled(){
+                if(!(typeof window.ethereum !== 'undefined')){
+                    alert("Please install MetaMask to use this dApp!");
+                }else{
+                    accounts =  await ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    document.getElementById('accountAmount').innerHTML = account;
+                }
+            }
+            
+            console.log(window);
+        </script>
+<%- include('./parts/footer'); -%>

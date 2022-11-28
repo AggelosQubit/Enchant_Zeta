@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <%- include('./parts/header'); -%>
+    <body class="container">
+
+        <%- include('./parts/nav'); -%>
+
+        <% if (locals.enchanter==undefined) {  %>
+            <div class="row justify-content-center"" >
+                <h1>Connect With MetaMask!</h1>
+            </div>
+            <div class="row">
+                <form class="form-control col-md-4 offset-md-4" method="POST" onsubmit="Ascension()" action="/" >
+                    <input hidden type="text" value="" id="form_address" name="address">
+                    <input class="form-control btn btn-primary" type="submit" value="Scan"/>
+                </form>
+            </div>
+            <hr/>
+            <div class="row justify-content-center"" >
+                <h1>Become an Enchanter!</h1>
+            </div>
+            <div class="row">
+                <form class="form-control col-md-4 offset-md-4" method="POST" onsubmit="Ascension()" action="/Enchanters" >
+                    <input pattern="[A-Za-z]*" class="form-control" required="required" placeholder="Denomination" type="text" value="" name="Denomination" >
+                    <input class="form-control" required="required" placeholder="Email" type="email" value="" name="email" >
+                    <label class="form-control" for="deity-select">Who Is Your Deity :</label>
+                    <select class="form-control" required="required"name="Deity" id="deity-select">
+                        <option value=""            >--Deities--</option>
+                        <option value="Gaïa"        >Gaïa</option>
+                        <option value="Hunabku"     >Hunabku</option>
+                        <option value="Rê"          >Rê</option>
+                        <option value="Verethragna" >Verethragna</option>
+                        <option value="Susanoo"     >Susanoo</option>
+                        <option value="Karundar"    >Karundar</option>
+                    </select>
+                    <input hidden type="text" value="" id="form_address" name="address">
+                    <hr/>
+                    <input class="form-control btn btn-primary" type="submit" value="Ascension"/>
+                </form>
+            </div>
+        <% } else {%>
+            <div class="row justify-content-center" >
+                <h1>Welcome Enchanter <%= locals.enchanter.Denomination %> !</h1>
+            </div>
+            <div class="">
+                <form method="POST" class="row " action="/LogOut" >
+                    <input type="submit" class="col-md-4 offset-md-4 btn btn-primary " value="Log Out" id="logOut" />
+                </form>
+            </div>
+        <% } %>
+        
+        <script>console.log(`<%= locals.connected %>`)</script>
+        <script>
+            let accounts = [];
+            var socket = io();
+            console.log(window);
+            
+            function Ascension(){
+                if(accounts[0]==="") return -1;
+                console.log("IN Ascension")
+                document.getElementById("form_address").value=accounts[0]
+            }
+            
+
+            async function ethEnabled(){
+                if(!(typeof window.ethereum !== 'undefined')){
+                    alert("Please install MetaMask to use this dApp!");
+                }else{
+                    accounts =  await ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    console.log("account[0] : "+accounts[0])
+                    socket.emit('getEnchant_id');
+                }
+            }
+
+            socket.on( 'not_enchanter',
+                (account)=>{
+                    window.alert('Operation Restricted to Enchanters, Please Create an account!');
+                }
+            );
+            if( `<%= locals.connected %>`=== ''  ){
+                console.log(`<%= locals.connected %>`)
+                console.log("NULL ethEnabled Calling...")
+                ethEnabled()
+            }else{
+                console.log("REQ EXIST <%= locals.connected %>")
+            }
+           /* 
+            function getGreetings(){
+                socket.emit('getGreeting');
+                socket.on('Greeting',function(valueGreetings){
+                    document.getElementById('valueGreetings').innerHTML = valueGreetings;
+                    console.log(valueGreetings);
+                });
+                
+            }
+
+            function setGreetings(){
+                //contract.methods.setGreeting(newGreeting).send({from : fromAdr});
+                console.log("setGreetings : "+ window.ethereum.selectedAddress);
+                socket.emit('setNewGreeting', accounts[0],  document.getElementById('newGreetingValue').value);
+            }
+            async function sendEth () {
+                ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [
+                        {
+                            from: accounts[0],
+                            to: '0x65fbC431a4dfcbDfDAB77Cdd2023Ea37cC82133B',
+                            value: '0x29a2241af62c000010',
+                            gasPrice: '0x09184e72a000',
+                            gas: '0x5208',
+                        },
+                    ],
+                })  .then((txHash) => console.log(txHash))
+                    .catch((error) => console.error);
+            }*/
+        </script>
+<%- include('./parts/footer'); -%>

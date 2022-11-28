@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <%- include('../parts/header'); -%>
+    <body class="container">
+
+        <%- include('../parts/nav'); -%>
+        <hr>
+        <% if (locals.enchanter!=undefined) {  %>
+            <script>console.log(`<%= enchanter.Denomination %>`)</script>
+            <h2><%= enchanter.Denomination %></h2>
+        <% } else {%>
+            <script>console.log(`<%= locals.connected %>`)</script>
+        <% } %>
+        <div>
+            <h2> Enchanters </h2>
+            <center>
+                <table class="table" id="enchantersTable">
+                
+                </table>
+            </center>  
+        </div>
+        
+        <script>
+            let accounts = [];
+            var socket = io();
+            function getGreetings(){
+                socket.emit('getGreeting');
+                socket.on('Greeting',function(valueGreetings){
+                    document.getElementById('valueGreetings').innerHTML = valueGreetings;
+                    console.log(valueGreetings);
+                });
+                
+            }
+            window.onload = (event) => {
+                socket.emit('getEnchanters')
+            };
+
+            socket.on('accounts',function(accounts){
+                document.getElementById('enchantersTable').innerHTML = "<tr><th>Index</th><th>Enchanter's ID</th></tr>";
+                for(var i=0;i<accounts.length;i++){
+                    document.getElementById('enchantersTable').innerHTML += "<tr><td>"+ i +"</td><td>"+ accounts[i]  +" </td></tr>" ;
+                }
+            });
+            async function ethEnabled(){
+                if(!(typeof window.ethereum !== 'undefined')){
+                    alert("Please install MetaMask to use this dApp!");
+                }else{
+                    accounts =  await ethereum.request({ method: 'eth_requestAccounts' });
+                    document.getElementById('enchantersTable').innerHTML = accounts;
+                    console.log(accounts);
+                }
+            }
+            
+            console.log(window);
+        </script>
+<%- include('../parts/footer'); -%>

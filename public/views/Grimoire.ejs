@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <%- include('./parts/header'); -%>
+    <body class="container">
+
+        <div class="Row">
+            <center><h1>Enchant Zeta SpellCraft </h1></center>
+            <center><h2>First User's Grimoire</h2></center>
+            <center>
+                <table class="table" style="border : solid Black 3px">
+                    <tr>
+                        <td style="border : solid purple 3px"><a href="/"> Home Tests </a></td>
+                        <td style="border : solid purple 3px"><a href="/NFT"> NFT Tests </a> </td>
+                        <td style="border : solid purple 3px"><a href="/Token"> Token Tests </a></td> 
+                    </tr>
+                </table>
+            </center>
+        </div>
+        <div class="Row">
+            <center>
+                <h1><a href="/Grimoire" >My Grimoire</a></h1>
+                <button onclick="getGrimoire()" type="button" class="btn btn-primary">
+                    Open Grimoire 🧙
+                </button>
+            </center>
+
+            <div id="Grimoire" class="row">
+            </div>    
+        </div>
+        <!-- Modal -->
+
+
+        <script>
+            let accounts = [];
+            var socket = io();
+            ethEnabled();
+
+            function getGrimoire(){
+                document.querySelector( "#Grimoire" ).innerHTML ="";
+                socket.emit('getGrimoire',accounts[0]);
+            }
+
+            socket.on('links', async function(links){
+                    var barreMax=0;
+                    var trueLinks=links;
+
+                    //console.log(trueLinks)
+                    for(var i=0;i<trueLinks.length;i++){
+                        createCard(trueLinks[i]);
+                    }
+                }
+            );
+
+            async function createCard(SpellURI){
+                //console.log(SpellURI)
+                var imageUrl="";
+                fetch(SpellURI)
+                .then(response => response.json())
+                .then( 
+                    _data => { 
+                        //console.log("data : "+ JSON.stringify(_data))
+                        if( _data.file === undefined || _data.file===null || _data.file=="[object Object]"){
+                            imageUrl="/img/spl.png"
+                        }else{
+                            imageUrl = _data.file
+                            console.log('imageUrl' + imageUrl);
+                        }
+                        //console.log(imageUrl , _data.SpellName , _data.Cooldown , _data.damageType , _data.MissileType , _data.damage)
+                        generateHtml(imageUrl , _data.SpellName , _data.Cooldown , _data.damageType , _data.MissileType , _data.damage);
+                    }
+                );
+            }
+            function generateHtml( imageUrl,SpellName,Cooldown,damageType,MissileType,damage ){
+                console.log(imageUrl,SpellName,Cooldown,damageType,MissileType,damage)
+                document.querySelector("#Grimoire").innerHTML +=""+
+                    "<div class=\"card col-md-4 SpellCard\">"+
+                    "       <img src=\"" + imageUrl + "\" class=\"card-img-top rounded float-left img-thumbnail\" width=\"300\" height=\"300\">"+
+                    "       <div class=\"card-body\">"+
+                    "               <h5 class=\"card-title\">"+ SpellName +"</h5>"+
+                    "               <h6 class=\"card-title\">Caracteristiques</h6>"+
+                    "           <table class=\"table\">"+
+                    "               <tr><td>Cooldown</td>       <td>"+ Cooldown +" </td></tr>"+
+                    "               <tr><td>Damage Type</td>    <td>"+ damageType +" </td></tr>"+
+                    "               <tr><td>Missile Type</td>   <td>"+ MissileType +" </td></tr>"+
+                    "               <tr><td>Damage</td>         <td>"+ damage +" </td></tr>"+
+                    "           </table>"+     
+                    "       </div>"+
+                    "</div>";
+            }
+
+            async function ethEnabled(){
+                if(!(typeof window.ethereum !== 'undefined')){
+                    alert("Please install MetaMask to use this dApp!");
+                }else{
+                    accounts =  await ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0];
+                    console.log('ethEnabled :' + accounts[0])
+                }
+            }
+            function Grimoire(){
+                console.log('IN Grimoire');
+            }
+            console.log(window);
+        </script>
+<%- include('./parts/footer'); -%>

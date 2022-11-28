@@ -1,0 +1,34 @@
+
+@font-face{
+    font-family:'Epyval';
+    src: url(./../fonts/epyval/Epyval.ttf);
+  }
+
+body {
+    background-image: url("../img/unbae.jpg") ;
+    color :  white;
+    background-repeat: no-repeat; 
+    background-position: center; 
+    background-attachment: fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    font-family:'Epyval';
+    src: url(./../fonts/epyval/Epyval.ttf);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.Paralax{
+    color: aqua;
+    height: 100%;
+}
+
+.SpellCard{
+    color:black;
+}
+
+.SpellCard :hover{
+    color:cadetblue;
+    background-color: black;
+}
