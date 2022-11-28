@@ -12,3 +12,5 @@ The architecture is complete for the first most important feature so I can now u
 versionning of the webSite!
 
 -I use Ganache from the Truffle Suite to create my SideChain
+
+-I use pinata for the IPFS NFT Storage
